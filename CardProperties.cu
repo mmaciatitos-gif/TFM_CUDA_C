@@ -33,6 +33,7 @@ printf( "Max blocks per multiprocessor:%d\n",prop.maxBlocksPerMultiProcessor);
 printf( "Shared mem per mp:%ld\n", prop.sharedMemPerBlock );
 printf( "Registers per mp:%d\n", prop.regsPerBlock );
 printf( "Threads in warp:%d\n", prop.warpSize );
+printf( "Max threads per multiprocessor:%d\n",prop.maxThreadsPerMultiProcessor );
 printf( "Max threads per block:%d\n",prop.maxThreadsPerBlock );
 printf( "Max thread dimensions: (%d, %d, %d)\n", prop.maxThreadsDim[0], prop.maxThreadsDim[1], prop.maxThreadsDim[2] );
 printf( "Max grid dimensions: (%d, %d, %d)\n", prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2] );

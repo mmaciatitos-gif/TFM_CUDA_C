@@ -37,10 +37,13 @@ for (int i=0; i<N; i++){
 
  double Tinicial, Tfinal, Ttotal;
 
+omp_set_num_threads(10);
+
 Ttotal = 0.0;
 for(int i = 0; i<100; i++){
 
 printf("iter=%d\n", i);
+
 
 Tinicial = omp_get_wtime();
 

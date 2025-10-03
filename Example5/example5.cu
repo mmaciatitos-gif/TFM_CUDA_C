@@ -11,22 +11,22 @@ double* data;
 
 __global__ void sqr_matrix_mult(double *matrix_a, double *matrix_b, double *matrix_result, int size){
 
-int i, j, iter, index;
+//Calculamos nuestro indice segun el bloque en el que estamos y nuestra
+//posicion dentro de este
+int i = threadIdx.x+blockDim.x + blockIdx.x;
+int j = threadIdx.y+blockDim.y + blockIdx.y;
 
-for (i = blockIdx.x; i < size; i = i + gridDim.x){
-	for (j = blockIdx.y; j < size; j = j + gridDim.y){
-		
-		index = i*size+j;
-		matrix_result[index] = 0.0;
+//Comprobamos que seguimos dentro de los limites de la matriz
+if (i < size && j < size){
+	int index = i*size+j;
+	matrix_result[index] = 0.0;
 
-		for (iter = 0; iter < size; iter++ ) {
+	for (int iter = 0; iter < size; iter++ ) {
 
 		matrix_result[index] = matrix_result[index]
 		+ matrix_a[size*i+iter] * matrix_b[size*iter+j];
-
-		}
+		}	
 	}
-}
 }
 
 
@@ -35,7 +35,8 @@ int main(void){
 Matrix A, B, C;
 double *gpu_A, *gpu_B, *gpu_C;
 
-dim3 grid(1000,1000);
+dim3 threadSize(64,64);
+dim3 blockSize(N/threadSize.x + 1,N/threadSize.y + 1);
 
 A.fil = N; A.col = N;
 A.data =(double*) malloc(sizeof(double)*N*N);
@@ -83,7 +84,7 @@ cudaMemcpy(gpu_A, A.data, N*N*sizeof(double), cudaMemcpyHostToDevice);
 cudaMemcpy(gpu_B, B.data, N*N*sizeof(double), cudaMemcpyHostToDevice);
 
 //Lanzamos nuestra función
-sqr_matrix_mult<<<grid,1>>>(gpu_A,gpu_B,gpu_C,N);
+sqr_matrix_mult<<<blockSize,threadSize>>>(gpu_A,gpu_B,gpu_C,N);
 
 //Extraemos nuestro resultado de la GPU
 cudaMemcpy(C.data, gpu_C, N*N*sizeof(double), cudaMemcpyDeviceToHost);
