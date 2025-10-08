@@ -3,7 +3,7 @@
 #define  N  10000
 #define  threadSize 32
 
-__global__ void vectorProd(float *vector_a, float *vector_b, float *res){
+__global__ void productoEscalar(float *vector_a, float *vector_b, float *res){
 
 //Creamos la variable compartida, donde alamacenamos la seccion de producto escalar asignada al bloque
 __shared__ float cache[threadSize];
@@ -84,7 +84,7 @@ cudaMemcpy(gpu_vector_a, vector_a, N*sizeof(float),cudaMemcpyHostToDevice);
 cudaMemcpy(gpu_vector_b, vector_b, N*sizeof(float),cudaMemcpyHostToDevice);
 
 //Lanzamos nuestro kernel
-vectorProd<<<padded_N/64,64>>>(gpu_vector_a,gpu_vector_b,gpu_result);
+productoEscalar<<<padded_N/64,64>>>(gpu_vector_a,gpu_vector_b,gpu_result);
 
 //Extraemos el resultado
 cudaMemcpy(&result, &gpu_result[0], sizeof(float),cudaMemcpyDeviceToHost);
