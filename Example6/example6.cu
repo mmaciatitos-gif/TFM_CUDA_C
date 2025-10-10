@@ -5,7 +5,7 @@
 
 __global__ void productoEscalar(float *vector_a, float *vector_b, float *res){
 
-//Creamos la variable compartida, donde alamacenamos la seccion de producto escalar asignada al bloque
+//Creamos la variable compartida, donde almacenamos la seccion de producto escalar asignada al bloque
 __shared__ float cache[threadSize];
 
 //Definimos un iterador y una variable que indica que elemento del vector corresponde al hilo
@@ -63,6 +63,8 @@ padded_N = N;
 else
 padded_N = (N/threadSize+1)*threadSize;
 
+printf("N/threadsize * threadsize = %d\n", padded_N/64);
+
 //Reservamos espacio en la GPU para los vectores y el resultado
 cudaMalloc((void**) &gpu_vector_a, padded_N*sizeof(float));
 cudaMalloc((void**) &gpu_vector_b, padded_N*sizeof(float));
@@ -71,12 +73,12 @@ cudaMalloc((void**) &gpu_result, sizeof(float));
 //Rellenamos las variables en la GPU con 0s para evitar posibles problemas
 cudaMemset(gpu_vector_a,0,padded_N*sizeof(float));
 cudaMemset(gpu_vector_b,0,padded_N*sizeof(float));
-cudaMemset(gpu_result,0,padded_N*sizeof(float));
+cudaMemset(gpu_result,0,sizeof(float));
 
 //Rellenamos los vectores sobre la CPU
 for(int i = 0; i<N; i++){
-vector_a[i] = 1/(i+1.0);
-vector_b[i] = i;
+vector_a[i] = 1.0/(i+1.0);
+vector_b[i] = 1.0+i;
 }
 
 //Enviamos los vectores a la GPU
@@ -84,7 +86,7 @@ cudaMemcpy(gpu_vector_a, vector_a, N*sizeof(float),cudaMemcpyHostToDevice);
 cudaMemcpy(gpu_vector_b, vector_b, N*sizeof(float),cudaMemcpyHostToDevice);
 
 //Lanzamos nuestro kernel
-productoEscalar<<<padded_N/64,64>>>(gpu_vector_a,gpu_vector_b,gpu_result);
+productoEscalar<<<padded_N/threadSize,threadSize>>>(gpu_vector_a,gpu_vector_b,gpu_result);
 
 //Extraemos el resultado
 cudaMemcpy(&result, &gpu_result[0], sizeof(float),cudaMemcpyDeviceToHost);
