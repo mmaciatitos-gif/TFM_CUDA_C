@@ -2,8 +2,6 @@
 
 #define  N  10000
 
-__constant__ int add_list_ct[N];
-
 __global__ void kernel_gl_mem(int *list, int *add_list){
 const int index = blockIdx.x + threadIdx.x*blockDim.x;
 if(index<N){
@@ -20,6 +18,8 @@ if(index<N){
 }
 list[index] = value;
 }}
+
+
 
 int main(void){
 
@@ -39,6 +39,10 @@ list[i] = rand() % 10;
 add_list[i] = rand() % 10;
 }
 
+//Enviamos nuestras listas a la GPU
+cudaMemcpy(gpu_list, list, N*sizeof(int), cudaMemcpyHostToDevice);
+cudaMemcpy(gpu_add_list, add_list, N*sizeof(int), cudaMemcpyHostToDevice);
+
 //Creamos las variables evento
 cudaEvent_t  start, stop;
 
@@ -48,7 +52,14 @@ cudaEventCreate (&stop);
 
 //Creamos una variable para almacenar los tiempos y otra para hacer media:
 float timeTemp = 0;
-float timeAvg = 0;
+float timeAvg;
+
+//########################################################################################################################
+
+//Memoria global
+
+//Reseteamos el tiempo medio
+timeAvg = 0;
 
 //Creamos un bucle
 for(int i=0; i<100; i++){
@@ -58,15 +69,8 @@ for(int i=0; i<100; i++){
 //Grabamos el evento inicial
 cudaEventRecord(start,0);
 
-//Enviamos nuestras matrices a la GPU
-cudaMemcpy(gpu_list, list, N*sizeof(int), cudaMemcpyHostToDevice);
-cudaMemcpy(gpu_add_list, add_list, N*sizeof(int), cudaMemcpyHostToDevice);
-
 //Lanzamos nuestra función
 kernel_gl_mem<<<N/128+1,128>>>(gpu_list, gpu_add_list);
-
-//Extraemos nuestro resultado de la GPU
-cudaMemcpy(list_res, gpu_list, N*sizeof(int), cudaMemcpyDeviceToHost);
 
 //Grabamos el evento final
 cudaEventRecord(stop,0);
@@ -83,10 +87,11 @@ printf("Tiempo global: %f\n", timeAvg/100.0);
 
 
 
+//########################################################################################################################
 
+//Registros
 
-
-//Creamos una variable para almacenar los tiempos y otra para hacer media:
+//Reseteamos el tiempo medio
 timeAvg = 0;
 
 //Creamos un bucle
@@ -97,9 +102,7 @@ for(int i=0; i<100; i++){
 //Grabamos el evento inicial
 cudaEventRecord(start,0);
 
-//Enviamos nuestras matrices a la GPU
-cudaMemcpy(gpu_list, list, N*sizeof(int), cudaMemcpyHostToDevice);
-cudaMemcpy(gpu_add_list, add_list, N*sizeof(int), cudaMemcpyHostToDevice);
+
 
 //Lanzamos nuestra función
 kernel_reg_mem<<<N/128+1,128>>>(gpu_list, gpu_add_list);
@@ -116,13 +119,13 @@ cudaEventElapsedTime(&timeTemp, start, stop);
 timeAvg = timeAvg + timeTemp;
 }
 
-//Destruimos los eventos
-cudaEventDestroy(start);
-cudaEventDestroy(stop);
-
 //Imprimimos la media de tiempo de ejecucion
 printf("Tiempo registros: %f\n", timeAvg/100.0);
 
+
+//Destruimos los eventos
+cudaEventDestroy(start);
+cudaEventDestroy(stop);
 
 //Liberamos la memoria
 cudaFree(gpu_list);
