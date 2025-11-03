@@ -11,7 +11,7 @@ typedef uint8_t sm;
 
 //Definiremos las normas en memoria constante
 __constant__ sm liveArray[9] = {0,0,1,1,0,0,0,0,0}; //1 si la celula vive, 0 si muere
-__constant__ sm breedArray[9] = {0,0,1,1,0,0,0,0,0}; //1 si la celula nace, 0 si no
+__constant__ sm breedArray[9] = {0,0,0,1,0,0,0,0,0}; //1 si la celula nace, 0 si no
 
 __device__ int conwaySum(int *sum, int x, int y, int mode, cudaTextureObject_t tex){
 int rows = blockDim.y*gridDim.y;
@@ -106,8 +106,8 @@ int main(void){
 cudaDeviceProp prop;
 cudaGetDeviceProperties(&prop, 0);
 cudaTextureObject_t tex;
-const int num_rows = 32;
-const int num_cols = prop.texturePitchAlignment*1;
+const int num_rows = 320;
+const int num_cols = prop.texturePitchAlignment*10;
 const int ts = num_cols*num_rows;
 const int ds = ts*sizeof(sm);
 
@@ -165,7 +165,7 @@ uint8_t palette[] = {
     };
     
 gif = ge_new_gif(
-        "conway_23_23.gif",  /* file name */
+        "conway_23_3.gif",  /* file name */
         w, h,           /* canvas size */
         palette,
         1,              /* palette depth == log2(# of colors) */
