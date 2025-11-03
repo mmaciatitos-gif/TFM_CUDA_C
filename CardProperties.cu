@@ -40,6 +40,9 @@ printf( "Max threads per multiprocessor:%d\n",prop.maxThreadsPerMultiProcessor )
 printf( "Max threads per block:%d\n",prop.maxThreadsPerBlock );
 printf( "Max thread dimensions: (%d, %d, %d)\n", prop.maxThreadsDim[0], prop.maxThreadsDim[1], prop.maxThreadsDim[2] );
 printf( "Max grid dimensions: (%d, %d, %d)\n", prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2] );
+printf( "Max 2D texture dimensions: (%d, %d, %d)\n",  prop.maxTexture2DLinear[0], prop.maxTexture2DLinear[1], prop.maxTexture2DLinear[2] );
+
+
 printf( "\n" );
 
 
