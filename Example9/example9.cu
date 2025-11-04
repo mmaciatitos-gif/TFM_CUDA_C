@@ -102,7 +102,7 @@ productoEscalarAtomic<<<padded_N/threadSize,threadSize>>>(gpu_vector_a,gpu_vecto
 cudaMemcpy(&result, &gpu_result[0], sizeof(float),cudaMemcpyDeviceToHost);
 
 //Imprimimos el resultado
-printf("Resultado atómico = %f\n", result);
+printf("Resultado atómico = %.1f\n", result);
 
 //Reseteamos la variable resultado
 cudaMemset(gpu_result,0,sizeof(float));
@@ -114,7 +114,7 @@ productoEscalarNoAtomic<<<padded_N/threadSize,threadSize>>>(gpu_vector_a,gpu_vec
 cudaMemcpy(&result, &gpu_result[0], sizeof(float),cudaMemcpyDeviceToHost);
 
 //Imprimimos el resultado
-printf("Resultado no atómico = %f\n", result);
+printf("Resultado no atómico = %.1f\n", result);
 
 //Reseteamos la variable resultado
 cudaMemset(gpu_result,0,sizeof(float));
