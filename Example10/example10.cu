@@ -71,11 +71,11 @@ cudaMemcpy( &vect_res[i], gpu_res, size, cudaMemcpyDeviceToHost);
 }
 
 //Sumamos los elementos restantes
-if((N-partial_N) > 0){
-cudaMemcpy(gpu_a, &vect_a[i], (N-partial_N)*sizeof(int), cudaMemcpyHostToDevice);
-cudaMemcpy(gpu_b, &vect_b[i], (N-partial_N)*sizeof(int), cudaMemcpyHostToDevice);
-sumaVectorial<<<partial_N/64+1, 64>>>(gpu_a, gpu_b, gpu_res, (N-partial_N));
-cudaMemcpy( &vect_res[i], gpu_res, (N-partial_N)*sizeof(int), cudaMemcpyDeviceToHost);
+if((N-i) > 0){
+cudaMemcpy(gpu_a, &vect_a[i], (N-i)*sizeof(int), cudaMemcpyHostToDevice);
+cudaMemcpy(gpu_b, &vect_b[i], (N-i)*sizeof(int), cudaMemcpyHostToDevice);
+sumaVectorial<<<(N-i)/64+1, 64>>>(gpu_a, gpu_b, gpu_res, (N-i));
+cudaMemcpy( &vect_res[i], gpu_res, (N-i)*sizeof(int), cudaMemcpyDeviceToHost);
 }
 
 cudaDeviceSynchronize();
@@ -152,18 +152,18 @@ cudaMemcpyAsync( &vect_res[i], gpu_res_2, size, cudaMemcpyDeviceToHost, s_2);
 }
 
 //Sumamos los elementos restantes
-if((N-partial_N) > 0){
+if((N-i) > 0){
 if(j == 1){
-cudaMemcpyAsync(gpu_a_1, &vect_a[i], (N-partial_N)*sizeof(int), cudaMemcpyHostToDevice, s_1);
-cudaMemcpyAsync(gpu_b_1, &vect_b[i], (N-partial_N)*sizeof(int), cudaMemcpyHostToDevice, s_1);
-sumaVectorial<<<partial_N/64+1, 64, 0, s_1>>>(gpu_a_1, gpu_b_1, gpu_res_1, (N-partial_N));
-cudaMemcpyAsync( &vect_res[i], gpu_res_1, (N-partial_N)*sizeof(int), cudaMemcpyDeviceToHost, s_1);
+cudaMemcpyAsync(gpu_a_1, &vect_a[i], (N-i)*sizeof(int), cudaMemcpyHostToDevice, s_1);
+cudaMemcpyAsync(gpu_b_1, &vect_b[i], (N-i)*sizeof(int), cudaMemcpyHostToDevice, s_1);
+sumaVectorial<<<(N-i)/64+1, 64, 0, s_1>>>(gpu_a_1, gpu_b_1, gpu_res_1, (N-i));
+cudaMemcpyAsync( &vect_res[i], gpu_res_1, (N-i)*sizeof(int), cudaMemcpyDeviceToHost, s_1);
 }
 else{
-cudaMemcpyAsync(gpu_a_2, &vect_a[i], (N-partial_N)*sizeof(int), cudaMemcpyHostToDevice, s_2);
-cudaMemcpyAsync(gpu_b_2, &vect_b[i], (N-partial_N)*sizeof(int), cudaMemcpyHostToDevice, s_2);
-sumaVectorial<<<partial_N/64+1, 64, 0, s_2>>>(gpu_a_2, gpu_b_2, gpu_res_2, (N-partial_N));
-cudaMemcpyAsync( &vect_res[i], gpu_res_2, (N-partial_N)*sizeof(int), cudaMemcpyDeviceToHost, s_2);
+cudaMemcpyAsync(gpu_a_2, &vect_a[i], (N-i)*sizeof(int), cudaMemcpyHostToDevice, s_2);
+cudaMemcpyAsync(gpu_b_2, &vect_b[i], (N-i)*sizeof(int), cudaMemcpyHostToDevice, s_2);
+sumaVectorial<<<(N-i)/64+1, 64, 0, s_2>>>(gpu_a_2, gpu_b_2, gpu_res_2, (N-i));
+cudaMemcpyAsync( &vect_res[i], gpu_res_2, (N-i)*sizeof(int), cudaMemcpyDeviceToHost, s_2);
 }
 }
 

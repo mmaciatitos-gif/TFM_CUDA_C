@@ -1,5 +1,5 @@
-// Compilar: gcc  -o bilateral bilateral.c -lm
-// Ejecutar: ./bilateral lena_ruido005.jpg output.png
+// Compilar: nvcc bilateralGPUBasico.cu -o bilateralGPUBasico
+// Ejecutar: ./bilateralGPUBasico lena_ruido005.jpg output.png
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -15,6 +15,7 @@
 #define SIGMA_S 3.0       // sigma espacial
 #define SIGMA_R 0.05       // sigma rango (intensidad, 0..1)
 
+//Definiremos las dimensiones de la imagen en memoria constante
 __constant__ int widthGPU, heightGPU, channelsGPU;
 
 
@@ -147,7 +148,9 @@ int main(int argc, char **argv) {
     }
 
     printf("Filtro bilateral adaptativo aplicado con exito.\n");
-
+    cudaFree(outputGPU);
+    cudaFree(inputGPU);
+    cudaFree(normGPU);	
     free(img);
     free(output);
     return 0;
